@@ -1,0 +1,33 @@
+{
+  "name": "build-your-own-blogging-api",
+  "version": "1.0.0",
+  "description": "![Design preview for the Build Your Own Blogging API](https://pub-63da695b9ece47c5b3b49bd78b86d884.r2.dev/Build%20your%20own%20blogging%20api.png)",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.3.1",
+    "bcryptjs": "^3.0.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.8",
+    "@types/node": "^22.13.2",
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.9",
+    "prisma": "^6.3.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
