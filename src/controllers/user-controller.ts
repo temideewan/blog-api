@@ -2,7 +2,14 @@ import { RequestHandler } from 'express';
 import prisma from '../database/db';
 export const getAllUsers: RequestHandler = async (req, res) => {
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        posts: true
+      },
+    });
     if (!users) {
       res.status(404).json({ success: false, message: 'No users found' });
       return;

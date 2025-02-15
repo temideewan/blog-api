@@ -28,7 +28,7 @@ export const registerNewUser: RequestHandler = async (
       .status(201)
       .json({
         success: true,
-        data: {token, user},
+        data: {token, user: {...user, password: undefined}},
         message: 'User registered successfully',
       });
   } catch (error) {
