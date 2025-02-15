@@ -8,8 +8,8 @@ const router = express.Router();
 router.post('/login');
 router.post(
   '/register',
-  // validateRegistrationSchema,
-  // catchValidationErrors,
+  validateRegistrationSchema,
+  catchValidationErrors,
   registerNewUser
 );
 
