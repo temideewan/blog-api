@@ -2,17 +2,27 @@ import express from 'express';
 import validateRegistrationSchema from '../utils/schema/auth-schema/register-user-schema';
 import {
   checkStatus,
+  deleteAllUser,
   loginUser,
   logoutUser,
   registerNewUser,
   requestPasswordResetToken,
+  resetPassword,
 } from '../controllers/auth-controller';
 import { catchValidationErrors } from '../middlewares/validation-catch';
 import validateLoginSchema from '../utils/schema/auth-schema/login-user-schema';
 import authMiddleware from '../middlewares/auth-middleware';
-import passwordRequestChangeSchema from '../utils/schema/password-token-request-schema';
+import passwordRequestChangeSchema from '../utils/schema/auth-schema/password-token-request-schema';
+import passwordRequestVerificationSchema from '../utils/schema/auth-schema/password-token-verify-schema';
 
 const router = express.Router();
+
+router.post(
+  '/reset-password:token',
+  passwordRequestVerificationSchema,
+  catchValidationErrors,
+  resetPassword
+);
 
 router.post(
   '/register',
@@ -30,5 +40,6 @@ router.post(
   requestPasswordResetToken
 );
 router.get('/check-status', authMiddleware, checkStatus);
+router.post('/delete-all', deleteAllUser);
 
 export default router;

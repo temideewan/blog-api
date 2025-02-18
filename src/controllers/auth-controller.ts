@@ -3,19 +3,12 @@ import { RequestWithMatchedData, RequestWithUser } from '../types';
 import prisma from '../utils/database/db';
 import { comparePassword, hashPassword } from '../utils/helpers/hash-password';
 import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
 import { signToken } from '../utils/helpers/jwt-helper';
 import { BlackList } from '../utils/database/redis-client';
 import { sendPasswordResetRequestEmail } from '../utils/helpers/mailtrap/emails';
+import { getValidUserResponse } from '../utils/helpers/user-formatter';
 
-export const registerNewUser: RequestHandler = async (
-  req: RequestWithMatchedData<{
-    email: string;
-    password: string;
-    username: string;
-  }>,
-  res
-) => {
+export const registerNewUser: RequestHandler = async (req: RequestWithMatchedData, res) => {
   try {
     if (!req.matchedData) {
       res.status(400).json({ success: false, message: 'Invalid request data' });
@@ -29,7 +22,7 @@ export const registerNewUser: RequestHandler = async (
     const token = signToken(user);
     res.status(201).json({
       success: true,
-      data: { token, user: getValidUserResponse(user) },
+      data: { token, data: getValidUserResponse(user) },
       message: 'User registered successfully',
     });
   } catch (error) {
@@ -37,13 +30,7 @@ export const registerNewUser: RequestHandler = async (
     res.status(500).json({ message: 'Server Error', success: false });
   }
 };
-export const loginUser: RequestHandler = async (
-  req: RequestWithMatchedData<{
-    email: string;
-    password: string;
-  }>,
-  res
-) => {
+export const loginUser: RequestHandler = async (req: RequestWithMatchedData, res) => {
   try {
     if (!req.matchedData) {
       res.status(400).json({ success: false, message: 'Invalid request data' });
@@ -107,10 +94,7 @@ export const logoutUser: RequestHandler = async (req, res) => {
   }
 };
 
-export const requestPasswordResetToken: RequestHandler = async (
-  req: RequestWithMatchedData<{ email: string }>,
-  res
-) => {
+export const requestPasswordResetToken: RequestHandler = async (req: RequestWithMatchedData, res) => {
   try {
     if (!req.matchedData) {
       res.status(400).json({
@@ -120,25 +104,26 @@ export const requestPasswordResetToken: RequestHandler = async (
       return;
     }
     const { email } = req.matchedData;
-    const foundUser = await prisma.user.findUnique({
-      where: {
-        email,
-      },
+
+    // send reset token to user email
+    // dummy reset token will always work
+    const resetToken = `12345`;
+    const resetTokenExpiry = new Date(Date.now() + 1 * 60 * 60 * 1000);
+    const updatedUser = await prisma.user.update({
+      where: { email: email },
+      data: { resetToken, resetTokenExpiry },
     });
-    if (!foundUser) {
+    if (!updatedUser) {
       res.status(404).json({ success: false, message: 'User not found' });
       return;
     }
-
-    // send reset token to user email
-    const resetToken = crypto.randomBytes(20).toString('hex');
-    const resetTokenExpiry = new Date(Date.now() + 1 * 60 * 60 * 1000);
-    await prisma.user.update({
-      where: { id: foundUser.id },
-      data: { resetToken, resetTokenExpiry },
-    });
     // send email with reset token
-    await sendPasswordResetRequestEmail(email, resetToken);
+    const clientUrl = process.env.CLIENT_URL;
+    if (!clientUrl) throw new Error('Invalid client URL');
+    await sendPasswordResetRequestEmail(
+      email,
+      `${clientUrl}/reset-password/${resetToken}`
+    );
     res.status(200).json({
       success: true,
       message: 'Reset token sent to your email',
@@ -150,7 +135,52 @@ export const requestPasswordResetToken: RequestHandler = async (
       .json({ message: 'An error occurred, please try again', success: false });
   }
 };
-export const verifyToken: RequestHandler = async (req, res) => {}
+export const resetPassword: RequestHandler = async (req: RequestWithMatchedData, res) => {
+  try {
+    if (!req.matchedData) {
+      res.status(400).json({
+        success: false,
+        message: 'Invalid request data, token required',
+      });
+      return;
+    }
+    const { token, password, email } = req.matchedData;
+    if (!token || !password || !email) {
+      res.status(400).json({ success: false, message: 'Invalid request data' });
+      return;
+    }
+    const hashedPassword = await hashPassword(password);
+    const foundUser = await prisma.user.update({
+      where: {
+        email,
+        resetToken: token,
+        resetTokenExpiry: {
+          gt: new Date(Date.now()),
+        },
+      },
+      data: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
+    });
+    if (!foundUser) {
+      res
+        .status(404)
+        .json({ success: false, message: 'User not found or token expired' });
+      return;
+    }
+    res.status(200).json({
+      message: 'User password reset successfully',
+      user: getValidUserResponse(foundUser),
+    });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: 'An error occurred, please try again', success: false });
+  }
+};
 
 export const checkStatus: RequestHandler = async (
   req: RequestWithUser,
@@ -171,3 +201,13 @@ export const checkStatus: RequestHandler = async (
       .json({ message: 'An error occurred, please try again', success: false });
   }
 };
+
+export const deleteAllUser: RequestHandler = async(req, res) => {
+  try {
+    const result = await prisma.user.deleteMany();
+    res.status(200).json({ success: true, message: 'All users deleted successfully', deletedCount: result.count });
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ success: false, message: 'An error occurred, please try again' });
+  }
+}

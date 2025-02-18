@@ -3,7 +3,7 @@ type VisibleUser = {
   email: string;
   username: string;
 };
-const getValidUserResponse = (object: VisibleUser) => {
+export const getValidUserResponse = (object: VisibleUser) => {
   return {
     id: object.id,
     email: object.email,
