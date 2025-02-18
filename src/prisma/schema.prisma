@@ -17,6 +17,10 @@ model User {
   password String
   posts    Post[]
   comments Comment[]
+
+  // optionals
+  resetToken String?
+  resetTokenExpiry DateTime?
 }
 
 model Post {

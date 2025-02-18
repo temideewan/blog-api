@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import prisma from '../database/db';
+import prisma from '../utils/database/db';
 export const getAllUsers: RequestHandler = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
