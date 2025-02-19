@@ -20,7 +20,8 @@ const decodeToken = (token: string): JwtPayload | undefined => {
     if (!secret) throw new Error(`Invalid JWT secret`);
     return jwt.verify(token, secret) as JwtPayload & { user?: any };
   } catch (error) {
-    throw new Error('Invalid token');
+    console.log(error)
+    throw error;
   }
 };
 

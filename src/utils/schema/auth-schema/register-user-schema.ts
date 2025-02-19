@@ -34,7 +34,82 @@ const validateRegistrationSchema = checkSchema(
       },
       isLength: {
         options: { min: 1 },
-        errorMessage: 'Username must be between longer than 1 character',
+        errorMessage: 'Username must be longer than 1 character',
+      },
+    },
+    accountType: {
+      notEmpty: {
+        errorMessage: 'Account type is required',
+      },
+      isString: {
+        errorMessage: 'Account type must be a string',
+      },
+      isIn: {
+        options: [['Freelancer', 'Company']],
+        errorMessage: "Account type must be either 'Freelancer' or 'Company'",
+      },
+    },
+    country: {
+      notEmpty: {
+        errorMessage: 'Country is required',
+      },
+      isString: {
+        errorMessage: 'Country must be a string',
+      },
+      isLength: {
+        options: { min: 1 },
+        errorMessage: 'Country must be at least 1 character',
+      },
+    },
+    countryCode: {
+      notEmpty: {
+        errorMessage: 'Country code is required',
+      },
+      isString: {
+        errorMessage: 'Country code must be a string',
+      },
+      isLength: {
+        options: { min: 1, max: 3 },
+        errorMessage:
+          'Country code must be between 1 and 3 (inclusive) characters long',
+      },
+    },
+    state: {
+      notEmpty: {
+        errorMessage: 'State is required',
+      },
+      isString: {
+        errorMessage: 'State must be a string',
+      },
+      isLength: {
+        options: { min: 1 },
+        errorMessage: 'State must be longer than 1 character',
+      },
+    },
+    address: {
+      notEmpty: {
+        errorMessage: 'Address is required',
+      },
+      isString: {
+        errorMessage: 'Address must be a string',
+      },
+      isLength: {
+        options: { min: 1, max: 100 },
+        errorMessage:
+          'Address must be longer than 1 character and shorter than 100 characters',
+      },
+    },
+    phoneNumber: {
+      notEmpty: {
+        errorMessage: 'State is required',
+      },
+      isString: {
+        errorMessage: 'State must be a string',
+      },
+      isLength: {
+        options: { min: 1, max: 20 },
+        errorMessage:
+          'State must be longer than 1 character and shorter than 20 characters',
       },
     },
   },
