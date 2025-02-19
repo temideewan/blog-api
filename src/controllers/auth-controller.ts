@@ -1,5 +1,9 @@
 import { RequestHandler } from 'express';
-import { RegisterUserPayload, RequestWithMatchedData, RequestWithUser } from '../types';
+import {
+  RegisterUserPayload,
+  RequestWithMatchedData,
+  RequestWithUser,
+} from '../types';
 import prisma from '../utils/database/db';
 import { comparePassword, hashPassword } from '../utils/helpers/hash-password';
 import jwt from 'jsonwebtoken';
@@ -181,7 +185,16 @@ export const resetPassword: RequestHandler = async (
       return;
     }
     const hashedPassword = await hashPassword(password);
-    const foundUser = await prisma.user.update({
+    const foundUser = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (!foundUser) {
+      res.status(404).json({ success: false, message: 'User not found' });
+      return;
+    }
+    const updatedUser = await prisma.user.update({
       where: {
         email,
         resetToken: token,
@@ -195,7 +208,7 @@ export const resetPassword: RequestHandler = async (
         resetTokenExpiry: null,
       },
     });
-    if (!foundUser) {
+    if (!updatedUser) {
       res
         .status(404)
         .json({ success: false, message: 'User not found or token expired' });
@@ -203,7 +216,7 @@ export const resetPassword: RequestHandler = async (
     }
     res.status(200).json({
       message: 'User password reset successfully',
-      user: getValidUserResponse(foundUser),
+      user: getValidUserResponse(updatedUser),
     });
   } catch (error) {
     console.log(error);
@@ -236,13 +249,11 @@ export const checkStatus: RequestHandler = async (
 export const deleteAllUser: RequestHandler = async (req, res) => {
   try {
     const result = await prisma.user.deleteMany();
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'All users deleted successfully',
-        deletedCount: result.count,
-      });
+    res.status(200).json({
+      success: true,
+      message: 'All users deleted successfully',
+      deletedCount: result.count,
+    });
   } catch (error) {
     console.log(error);
     res

@@ -40,6 +40,7 @@ router.post(
   requestPasswordResetToken
 );
 router.get('/check-status', authMiddleware, checkStatus);
-router.post('/delete-all', deleteAllUser);
+// WARNING ONLY USE FOR DEVELOPMENT ONLY.
+router.post('/delete-all', authMiddleware, deleteAllUser);
 
 export default router;
