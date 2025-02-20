@@ -1,6 +1,10 @@
 import { RequestHandler } from 'express';
 import prisma from '../utils/database/db';
-import { RequestWithUser } from '../types';
+import {
+  RegisterUserPayload,
+  RequestWithMatchedData,
+  RequestWithUser,
+} from '../types';
 import { getValidUserResponse } from '../utils/helpers/user-formatter';
 export const getAllUsers: RequestHandler = async (req, res) => {
   try {
@@ -56,10 +60,36 @@ export const getCurrentUser: RequestHandler = async (
     res.status(500).json({ message: 'Server Error', success: false });
   }
 };
-
+type UpdateUserPayload = RequestWithMatchedData<
+  RegisterUserPayload & { user: { id: number } }
+>;
 export const updateUser: RequestHandler = async (
-  req: RequestWithUser,
+  req: UpdateUserPayload,
   res
 ) => {
-  
+  try {
+    if (!req.matchedData) {
+      res.status(400).json({ message: 'Invalid request data', success: false });
+      return;
+    }
+    const { user, ...userUpdate } = req.matchedData;
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: { ...userUpdate },
+    });
+    if (!updatedUser) {
+      res.status(404).json({ success: false, message: 'User not found' });
+      return;
+    }
+    res.status(200).json({
+      success: true,
+      data: getValidUserResponse(updatedUser),
+      message: 'User updated successfully',
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Something went wrong', success: false });
+  }
 };

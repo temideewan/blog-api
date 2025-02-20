@@ -12,7 +12,7 @@ import { BlackList } from '../utils/database/redis-client';
 import { sendPasswordResetRequestEmail } from '../utils/helpers/mailtrap/emails';
 import { getValidUserResponse } from '../utils/helpers/user-formatter';
 export const registerNewUser: RequestHandler = async (
-  req: RequestWithMatchedData,
+  req: RequestWithMatchedData<RegisterUserPayload>,
   res
 ) => {
   try {
@@ -31,7 +31,7 @@ export const registerNewUser: RequestHandler = async (
       state,
       address,
       phoneNumber,
-    } = req.matchedData as RegisterUserPayload;
+    } = req.matchedData;
     const hashedPassword = await hashPassword(password);
     const user = await prisma.user.create({
       data: {
@@ -59,7 +59,7 @@ export const registerNewUser: RequestHandler = async (
   }
 };
 export const loginUser: RequestHandler = async (
-  req: RequestWithMatchedData,
+  req: RequestWithMatchedData<{email: string, password: string}>,
   res
 ) => {
   try {
@@ -126,7 +126,7 @@ export const logoutUser: RequestHandler = async (req, res) => {
 };
 
 export const requestPasswordResetToken: RequestHandler = async (
-  req: RequestWithMatchedData,
+  req: RequestWithMatchedData<{email: string}>,
   res
 ) => {
   try {
@@ -170,7 +170,7 @@ export const requestPasswordResetToken: RequestHandler = async (
   }
 };
 export const resetPassword: RequestHandler = async (
-  req: RequestWithMatchedData,
+  req: RequestWithMatchedData<{token: string, email: string, password: string}>,
   res
 ) => {
   try {

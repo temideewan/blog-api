@@ -3,7 +3,11 @@ import { matchedData, validationResult } from 'express-validator';
 import { errorFormatter } from '../utils/helpers/error-formatter';
 import { RequestWithMatchedData } from '../types';
 
-export const catchValidationErrors: RequestHandler = (req: RequestWithMatchedData, res, next) => {
+export const catchValidationErrors: RequestHandler = (
+  req: RequestWithMatchedData<Record<string, any>>,
+  res,
+  next
+) => {
   const result = validationResult(req);
   const isEmpty = !result.isEmpty();
   if (isEmpty) {

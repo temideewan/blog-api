@@ -1,6 +1,6 @@
 import { AccountType } from '@prisma/client';
 import { Request } from 'express';
-export type RequestWithMatchedData<T = Record<string, any>> = Request & {
+export type RequestWithMatchedData<T> = Request & {
   matchedData?: T;
 };
 export type RequestWithUser<T = Record<string, any>> = Request & { user?: T };

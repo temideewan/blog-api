@@ -10,8 +10,8 @@ declare global {
     }
   }
   namespace Express {
-    interface Request {
-      matchedData?: any;
+    interface Request<T> {
+      matchedData?: T;
     }
   }
 }
