@@ -25,16 +25,28 @@ const validateRegistrationSchema = checkSchema(
         errorMessage: 'Password must be between 8 and 25 characters long',
       },
     },
-    username: {
+    firstName: {
       notEmpty: {
-        errorMessage: 'Username is required',
+        errorMessage: 'First name is required',
       },
       isString: {
-        errorMessage: 'Username must be a string',
+        errorMessage: 'First name must be a string',
       },
       isLength: {
         options: { min: 1 },
-        errorMessage: 'Username must be longer than 1 character',
+        errorMessage: 'First name must be longer than 1 character',
+      },
+    },
+    lastName: {
+      notEmpty: {
+        errorMessage: 'Last name is required',
+      },
+      isString: {
+        errorMessage: 'Last name must be a string',
+      },
+      isLength: {
+        options: { min: 1 },
+        errorMessage: 'Last name must be longer than 1 character',
       },
     },
     accountType: {

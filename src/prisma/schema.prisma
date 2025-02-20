@@ -17,14 +17,15 @@ enum AccountType {
 
 model User {
   id          Int         @id @default(autoincrement())
-  username        String      @unique
+  firstName  String      @unique
+  lastName   String      @unique
   email       String      @unique
   password    String
   accountType AccountType @default(Freelancer)
-  country String 
+  country     String
   countryCode String
-  state String
-  address String
+  state       String
+  address     String
   phoneNumber String
   posts       Post[]
   comments    Comment[]

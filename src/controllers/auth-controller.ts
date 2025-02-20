@@ -23,7 +23,8 @@ export const registerNewUser: RequestHandler = async (
     const {
       email,
       password,
-      username,
+      firstName,
+      lastName,
       accountType,
       country,
       countryCode,
@@ -36,7 +37,8 @@ export const registerNewUser: RequestHandler = async (
       data: {
         email,
         password: hashedPassword,
-        username,
+        firstName,
+        lastName,
         accountType,
         country,
         countryCode,

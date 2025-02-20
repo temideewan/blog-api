@@ -8,7 +8,8 @@ export type RequestWithUser<T = Record<string, any>> = Request & { user?: T };
 export type RegisterUserPayload = {
   email: string;
   password: string;
-  username: string;
+  firstName: string;
+  lastName: string;
   accountType: AccountType;
   country: string;
   countryCode: string;

@@ -8,7 +8,8 @@ export const getAllUsers: RequestHandler = async (req, res) => {
       select: {
         id: true,
         email: true,
-        username: true,
+        firstName: true,
+        lastName: true,
         posts: true,
       },
     });
@@ -40,17 +41,6 @@ export const getCurrentUser: RequestHandler = async (
     }
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        accountType: true,
-        country: true,
-        countryCode: true,
-        state: true,
-        address: true,
-        phoneNumber: true,
-      },
     });
     if (!user) {
       res.status(404).json({ success: false, message: 'User not found' });
@@ -65,4 +55,11 @@ export const getCurrentUser: RequestHandler = async (
     console.log(error);
     res.status(500).json({ message: 'Server Error', success: false });
   }
+};
+
+export const updateUser: RequestHandler = async (
+  req: RequestWithUser,
+  res
+) => {
+  
 };
