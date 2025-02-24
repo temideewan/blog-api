@@ -5,18 +5,9 @@ import {
   RequestWithMatchedData,
   RequestWithUser,
 } from '../types';
-import { getValidUserResponse } from '../utils/helpers/user-formatter';
 export const getAllUsers: RequestHandler = async (req, res) => {
   try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        posts: true,
-      },
-    });
+    const users = await prisma.user.findMany({});
     if (!users) {
       res.status(404).json({ success: false, message: 'No users found' });
       return;
@@ -52,7 +43,7 @@ export const getCurrentUser: RequestHandler = async (
     }
     res.status(200).json({
       success: true,
-      data: getValidUserResponse(user),
+      data: user,
       message: 'User retrieved successfully',
     });
   } catch (error) {
@@ -85,7 +76,7 @@ export const updateUser: RequestHandler = async (
     }
     res.status(200).json({
       success: true,
-      data: getValidUserResponse(updatedUser),
+      data: updatedUser,
       message: 'User updated successfully',
     });
   } catch (error) {

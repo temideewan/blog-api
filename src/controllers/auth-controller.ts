@@ -10,7 +10,6 @@ import jwt from 'jsonwebtoken';
 import { signToken } from '../utils/helpers/jwt-helper';
 import { BlackList } from '../utils/database/redis-client';
 import { sendPasswordResetRequestEmail } from '../utils/helpers/mailtrap/emails';
-import { getValidUserResponse } from '../utils/helpers/user-formatter';
 export const registerNewUser: RequestHandler = async (
   req: RequestWithMatchedData<RegisterUserPayload>,
   res
@@ -50,7 +49,7 @@ export const registerNewUser: RequestHandler = async (
     const token = signToken(user);
     res.status(201).json({
       success: true,
-      data: { token, data: getValidUserResponse(user) },
+      data: { token, data: user },
       message: 'User registered successfully',
     });
   } catch (error) {
@@ -72,6 +71,9 @@ export const loginUser: RequestHandler = async (
       where: {
         email,
       },
+      omit: {
+        password: false
+      }
     });
     if (!foundUser) {
       res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -218,7 +220,7 @@ export const resetPassword: RequestHandler = async (
     }
     res.status(200).json({
       message: 'User password reset successfully',
-      user: getValidUserResponse(updatedUser),
+      user: updatedUser,
     });
   } catch (error) {
     console.log(error);
